@@ -1,10 +1,13 @@
 package gorequests
 
 import (
+	"code.byted.org/kite/kitutil"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 // doRequest send request
@@ -55,11 +58,18 @@ func (r *Request) doInternalRequest() error {
 		}
 	}
 
+	r.reqTime = time.Now()
 	resp, err := c.Do(req)
+	r.respTime = time.Now()
+	r.doErr = err
 	r.resp = resp
 	r.isRequest = true
 	if err != nil {
 		return fmt.Errorf("[gorequest] %s %s send request failed: %w", r.method, r.cachedurl, err)
+	}
+	err = r.doProduceLog()
+	if err != nil {
+		r.logger.Error(r.Context(), "produce log failed: %s", err)
 	}
 	return nil
 }
@@ -85,6 +95,47 @@ func (r *Request) doRead() error {
 		r.logger.Info(r.Context(), "[gorequests] %s: %s, status_code: %d, header: %s, doRead: %s", r.method, r.cachedurl, r.resp.StatusCode, r.resp.Header, r.bytes)
 		return nil
 	})
+}
+
+func (r *Request) doProduceLog() error {
+	if r.logProducer == nil {
+		return nil
+	}
+
+	if err := r.doInternalRequest(); err != nil {
+		return err
+	}
+
+	if r.isSend {
+		return nil
+	}
+
+	message := LogMessage{
+		Method:            r.method,
+		Url:               r.cachedurl,
+		RequestBody:       r.rawBody,
+		RequestHeader:     r.header,
+		RequestTime:       r.reqTime,
+		ResponseBody:      r.bytes,
+		ResponseHeader:    r.resp.Header,
+		ResponseStateCode: r.resp.StatusCode,
+		ResponseTime:      r.respTime,
+		TimeConsuming:     r.respTime.UnixMilli() - r.reqTime.UnixMilli(),
+		Error:             r.doErr,
+		LogId:             r.getStrCtx(kitutil.LOGIDKEY),
+		RequestType:       2,
+	}
+	data, _ := json.Marshal(message)
+
+	var err error
+	err = r.logProducer.SendLogMessage(r.context, data)
+	r.isSend = true
+	if err != nil {
+		return fmt.Errorf("[gorequest] %s %s send log message failed %w, message: %s", r.method, r.cachedurl, err, string(data))
+	}
+
+	r.logger.Info(r.Context(), "[gorequests] %s: %s, produce log: %s", r.method, r.cachedurl, string(data))
+	return nil
 }
 
 func (r *Request) doRequestFactor(f func() error) error {

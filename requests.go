@@ -36,6 +36,13 @@ type Request struct {
 	bytes     []byte
 	isRead    bool
 	isRequest bool
+
+	// log producer
+	isSend      bool
+	logProducer LogProducer
+	reqTime     time.Time
+	respTime    time.Time
+	doErr       error
 }
 
 func New(method, url string) *Request {

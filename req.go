@@ -40,6 +40,21 @@ func (r *Request) RequestFullURL() string {
 	return r.parseRequestURL()
 }
 
+func (r *Request) getStrCtx(key string) string {
+	ctx := r.Context()
+	if ctx == nil {
+		return ""
+	}
+	v := ctx.Value(key)
+	switch v := v.(type) {
+	case string:
+		return v
+	case *string:
+		return *v
+	}
+	return ""
+}
+
 func (r *Request) SetFullUrl(url string) {
 	r.lock.RLock()
 	defer r.lock.RUnlock()
@@ -233,6 +248,13 @@ func (r *Request) WithURLCookie(uri string) *Request {
 func (r *Request) WithLogger(logger Logger) *Request {
 	return r.configParamFactor(func(r *Request) {
 		r.logger = logger
+	})
+}
+
+// WithLogProducer set log producer
+func (r *Request) WithLogProducer(producer LogProducer) *Request {
+	return r.configParamFactor(func(r *Request) {
+		r.logProducer = producer
 	})
 }
 
