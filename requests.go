@@ -38,11 +38,11 @@ type Request struct {
 	isRequest bool
 
 	// log producer
-	isSend      bool
-	logProducer LogProducer
-	reqTime     time.Time
-	respTime    time.Time
-	doErr       error
+	isSend   bool
+	logMsg   LogMessage
+	reqTime  time.Time
+	respTime time.Time
+	doErr    error
 }
 
 func New(method, url string) *Request {
@@ -60,4 +60,8 @@ func New(method, url string) *Request {
 func (r *Request) SetError(err error) *Request {
 	r.err = err
 	return r
+}
+
+func SetLogProducer(producer LogProducer) {
+	logProducer = producer
 }

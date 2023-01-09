@@ -198,3 +198,36 @@ func newTestHttpServer() {
 		panic(err)
 	}
 }
+
+func Test_LogProducer(t *testing.T) {
+	as := assert.New(t)
+
+	t.Run("", func(t *testing.T) {
+		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithTimeout(time.Second * 10)
+		text, err := r.Text()
+		if err != nil {
+			panic(err)
+		}
+		logMessage := r.LogMessage()
+		fmt.Println("text: ", text)
+		fmt.Println("log message: ", logMessage)
+		as.Nil(err)
+		as.NotEmpty(text)
+		as.Empty(logMessage)
+	})
+
+	t.Run("", func(t *testing.T) {
+		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
+		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithTimeout(time.Second * 10)
+		text, err := r.Text()
+		if err != nil {
+			panic(err)
+		}
+		logMessage := r.LogMessage()
+		fmt.Println("text: ", text)
+		fmt.Println("log message: ", logMessage)
+		as.Nil(err)
+		as.NotEmpty(text)
+		as.NotEmpty(logMessage)
+	})
+}

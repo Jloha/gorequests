@@ -98,7 +98,7 @@ func (r *Request) doRead() error {
 }
 
 func (r *Request) doProduceLog() error {
-	if r.logProducer == nil {
+	if logProducer == nil {
 		return nil
 	}
 
@@ -125,10 +125,11 @@ func (r *Request) doProduceLog() error {
 		LogId:             r.getStrCtx(kitutil.LOGIDKEY),
 		RequestType:       2,
 	}
+	r.logMsg = message
 	data, _ := json.Marshal(message)
 
 	var err error
-	err = r.logProducer.SendLogMessage(r.context, data)
+	err = logProducer.SendLogMessage(r.context, data)
 	r.isSend = true
 	if err != nil {
 		return fmt.Errorf("[gorequest] %s %s send log message failed %w, message: %s", r.method, r.cachedurl, err, string(data))

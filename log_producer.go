@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+var (
+	logProducer LogProducer
+)
+
 type LogProducer interface {
 	SendLogMessage(ctx context.Context, data []byte) error
 }

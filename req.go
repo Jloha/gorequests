@@ -55,6 +55,10 @@ func (r *Request) getStrCtx(key string) string {
 	return ""
 }
 
+func (r *Request) LogMessage() LogMessage {
+	return r.logMsg
+}
+
 func (r *Request) SetFullUrl(url string) {
 	r.lock.RLock()
 	defer r.lock.RUnlock()
@@ -248,13 +252,6 @@ func (r *Request) WithURLCookie(uri string) *Request {
 func (r *Request) WithLogger(logger Logger) *Request {
 	return r.configParamFactor(func(r *Request) {
 		r.logger = logger
-	})
-}
-
-// WithLogProducer set log producer
-func (r *Request) WithLogProducer(producer LogProducer) *Request {
-	return r.configParamFactor(func(r *Request) {
-		r.logProducer = producer
 	})
 }
 
