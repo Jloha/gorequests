@@ -1,12 +1,13 @@
-module github.com/bitholic/gorequests
+module github.com/jloha/gorequests
 
 go 1.17
 
 require (
 	code.byted.org/kite/kitutil v3.8.4+incompatible
-	code.byted.org/rocketmq/rocketmq-go-proxy v1.4.35
+	code.byted.org/rocketmq/rocketmq-go-proxy v1.4.36
+	github.com/bitholic/gorequests v0.39.0
 	github.com/chyroc/persistent-cookiejar v0.1.0
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.8.1
 )
 
 require (
@@ -31,7 +32,7 @@ require (
 	code.byted.org/gopkg/net2 v1.4.1 // indirect
 	code.byted.org/gopkg/tccclient v1.4.2 // indirect
 	code.byted.org/gopkg/thrift v1.12.0 // indirect
-	code.byted.org/inf/authcenter v1.1.1 // indirect
+	code.byted.org/inf/authcenter v1.2.0 // indirect
 	code.byted.org/kite/endpoint v3.7.5+incompatible // indirect
 	code.byted.org/kite/kitc v3.10.22+incompatible // indirect
 	code.byted.org/kite/kitex v1.9.4 // indirect
