@@ -57,6 +57,14 @@ func (p *rmqLogProducer) SendLogMessage(ctx context.Context, data []byte) error 
 	return err
 }
 
+type RequestMessageType int
+
+const (
+	RequestMessageType_Unknown RequestMessageType = 0
+	RequestMessageType_In      RequestMessageType = 1
+	RequestMessageType_Out     RequestMessageType = 2
+)
+
 type LogMessage struct {
 	Method string `json:"method"`
 	Url    string `json:"url"`
@@ -73,6 +81,6 @@ type LogMessage struct {
 	TimeConsuming int64  `json:"time_consuming"` // milliseconds
 	ErrorMessage  string `json:"error_message"`
 
-	LogId       string `json:"log_id"`
-	RequestType int    `json:"request_type"` // 0-unknown, 1-in, 2-out
+	LogId       string             `json:"log_id"`
+	RequestType RequestMessageType `json:"request_type"`
 }

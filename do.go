@@ -122,7 +122,7 @@ func (r *Request) doProduceLog() error {
 		ResponseTime:      r.respTime,
 		TimeConsuming:     r.respTime.UnixMilli() - r.reqTime.UnixMilli(),
 		LogId:             r.getStrCtx(kitutil.LOGIDKEY),
-		RequestType:       2,
+		RequestType:       RequestMessageType_Out,
 	}
 	if r.doErr != nil {
 		message.ErrorMessage = r.doErr.Error()
