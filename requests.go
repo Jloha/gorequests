@@ -39,7 +39,7 @@ type Request struct {
 
 	// log producer
 	isSend   bool
-	logMsg   LogMessage
+	logData  []byte
 	reqTime  time.Time
 	respTime time.Time
 	doErr    error

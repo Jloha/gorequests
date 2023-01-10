@@ -208,12 +208,12 @@ func Test_LogProducer(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		logMessage := r.LogMessage()
+		logData := r.LogData()
 		fmt.Println("text: ", text)
-		fmt.Println("log message: ", logMessage)
+		fmt.Printf("log data: %v\n", string(logData))
 		as.Nil(err)
 		as.NotEmpty(text)
-		as.Empty(logMessage)
+		as.Empty(logData)
 	})
 
 	t.Run("", func(t *testing.T) {
@@ -223,11 +223,11 @@ func Test_LogProducer(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		logMessage := r.LogMessage()
+		logData := r.LogData()
 		fmt.Println("text: ", text)
-		fmt.Println("log message: ", logMessage)
+		fmt.Printf("log data: %v\n", string(logData))
 		as.Nil(err)
 		as.NotEmpty(text)
-		as.NotEmpty(logMessage)
+		as.NotEmpty(logData)
 	})
 }

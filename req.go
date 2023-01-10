@@ -55,18 +55,9 @@ func (r *Request) getStrCtx(key string) string {
 	return ""
 }
 
-func (r *Request) LogMessage() LogMessage {
-	return r.logMsg
-}
-
-func (r *Request) SetFullUrl(url string) {
-	r.lock.RLock()
-	defer r.lock.RUnlock()
-	if url == "" {
-		return
-	}
-
-	r.fullUrl = url
+// LogData unit test only
+func (r *Request) LogData() []byte {
+	return r.logData
 }
 
 // Method request method
@@ -80,6 +71,16 @@ func (r *Request) RequestHeader() http.Header {
 }
 
 // ----- set params
+
+func (r *Request) SetFullUrl(url string) {
+	r.lock.RLock()
+	defer r.lock.RUnlock()
+	if url == "" {
+		return
+	}
+
+	r.fullUrl = url
+}
 
 // WithContext setup request context.Context
 func (r *Request) WithContext(ctx context.Context) *Request {
