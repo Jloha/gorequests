@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bitholic/gorequests"
+	"github.com/jloha/gorequests"
 	"github.com/stretchr/testify/assert"
 )
 

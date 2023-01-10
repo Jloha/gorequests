@@ -121,9 +121,11 @@ func (r *Request) doProduceLog() error {
 		ResponseStateCode: r.resp.StatusCode,
 		ResponseTime:      r.respTime,
 		TimeConsuming:     r.respTime.UnixMilli() - r.reqTime.UnixMilli(),
-		Error:             r.doErr,
 		LogId:             r.getStrCtx(kitutil.LOGIDKEY),
 		RequestType:       2,
+	}
+	if r.doErr != nil {
+		message.ErrorMessage = r.doErr.Error()
 	}
 	r.logMsg = message
 	data, _ := json.Marshal(message)

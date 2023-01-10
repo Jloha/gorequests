@@ -70,8 +70,8 @@ type LogMessage struct {
 	ResponseStateCode int         `json:"response_state_code"`
 	ResponseTime      time.Time   `json:"response_time"`
 
-	TimeConsuming int64 `json:"time_consuming"` // milliseconds
-	Error         error `json:"error"`
+	TimeConsuming int64  `json:"time_consuming"` // milliseconds
+	ErrorMessage  string `json:"error_message"`
 
 	LogId       string `json:"log_id"`
 	RequestType int    `json:"request_type"` // 0-unknown, 1-in, 2-out
