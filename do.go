@@ -113,10 +113,10 @@ func (r *Request) doProduceLog() error {
 	message := LogMessage{
 		Method:            r.method,
 		Url:               r.cachedurl,
-		RequestBody:       r.rawBody,
+		RequestBody:       string(r.rawBody),
 		RequestHeader:     r.header,
 		RequestTime:       r.reqTime,
-		ResponseBody:      r.bytes,
+		ResponseBody:      string(r.bytes),
 		ResponseHeader:    r.resp.Header,
 		ResponseStateCode: r.resp.StatusCode,
 		ResponseTime:      r.respTime,

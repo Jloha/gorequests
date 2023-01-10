@@ -230,4 +230,18 @@ func Test_LogProducer(t *testing.T) {
 		as.NotEmpty(text)
 		as.NotEmpty(logData)
 	})
+
+	t.Run("", func(t *testing.T) {
+		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
+		body := `{"A":["1","2"], "B":"999"}`
+		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithBody(body).WithTimeout(time.Second * 10)
+		_, err := r.Text()
+		if err != nil {
+			panic(err)
+		}
+		logData := r.LogData()
+		fmt.Printf("log data: %v\n", string(logData))
+		as.Nil(err)
+		as.Equal(body, "{\"A\":[\"1\",\"2\"], \"B\":\"999\"}")
+	})
 }

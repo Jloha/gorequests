@@ -69,11 +69,11 @@ type LogMessage struct {
 	Method string `json:"method"`
 	Url    string `json:"url"`
 
-	RequestBody   []byte      `json:"request_body"`
+	RequestBody   string      `json:"request_body"`
 	RequestHeader http.Header `json:"request_header"`
 	RequestTime   time.Time   `json:"request_time"`
 
-	ResponseBody      []byte      `json:"response_body"`
+	ResponseBody      string      `json:"response_body"`
 	ResponseHeader    http.Header `json:"response_header"`
 	ResponseStateCode int         `json:"response_state_code"`
 	ResponseTime      time.Time   `json:"response_time"`
