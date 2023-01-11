@@ -62,7 +62,9 @@ func (r *Request) doInternalRequest() error {
 	r.reqTime = time.Now()
 	resp, err := c.Do(req)
 	r.respTime = time.Now()
-	r.doErr = err
+	if r.doErr == nil {
+		r.doErr = err
+	}
 	r.resp = resp
 	r.isRequest = true
 	if err != nil {

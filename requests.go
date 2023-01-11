@@ -65,3 +65,8 @@ func (r *Request) SetError(err error) *Request {
 func SetLogProducer(producer LogProducer) {
 	logProducer = producer
 }
+
+func (r *Request) SetDoError(err error) *Request {
+	r.doErr = err
+	return r
+}

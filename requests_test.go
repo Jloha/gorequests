@@ -2,6 +2,7 @@ package gorequests_test
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -205,9 +206,6 @@ func Test_LogProducer(t *testing.T) {
 	t.Run("/log_unset", func(t *testing.T) {
 		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithTimeout(time.Second * 10)
 		text, err := r.Text()
-		if err != nil {
-			panic(err)
-		}
 		log := r.LogMessage()
 		as.Nil(err)
 		as.NotEmpty(text)
@@ -218,9 +216,6 @@ func Test_LogProducer(t *testing.T) {
 		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
 		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithTimeout(time.Second * 10)
 		text, err := r.Text()
-		if err != nil {
-			panic(err)
-		}
 		log := r.LogMessage()
 		as.Nil(err)
 		as.NotEmpty(text)
@@ -232,9 +227,6 @@ func Test_LogProducer(t *testing.T) {
 		url := "https://httpbin.org/get?a=1"
 		r := gorequests.New(http.MethodGet, url).WithTimeout(time.Second * 10)
 		_, err := r.Text()
-		if err != nil {
-			panic(err)
-		}
 		log := r.LogMessage()
 		as.Nil(err)
 		as.Equal(url, log.Url)
@@ -245,11 +237,18 @@ func Test_LogProducer(t *testing.T) {
 		body := `{"A":["1","2"], "B":"999"}`
 		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithBody(body).WithTimeout(time.Second * 10)
 		_, err := r.Text()
-		if err != nil {
-			panic(err)
-		}
 		log := r.LogMessage()
 		as.Nil(err)
 		as.Equal(body, log.RequestBody)
+	})
+
+	t.Run("/error", func(t *testing.T) {
+		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
+		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithTimeout(time.Second * 10).SetDoError(errors.New("test error"))
+		_, err := r.Text()
+		log := r.LogMessage()
+		as.Nil(err)
+		as.NotEmpty(log)
+		as.Equal("test error", log.ErrorMessage)
 	})
 }
