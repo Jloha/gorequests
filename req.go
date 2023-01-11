@@ -249,6 +249,12 @@ func (r *Request) WithURLCookie(uri string) *Request {
 	})
 }
 
+func (r *Request) WithLogProducer(producer LogProducer) *Request {
+	return r.configParamFactor(func(r *Request) {
+		r.logProducer = producer
+	})
+}
+
 // WithLogger set logger
 func (r *Request) WithLogger(logger Logger) *Request {
 	return r.configParamFactor(func(r *Request) {

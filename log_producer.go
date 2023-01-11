@@ -6,11 +6,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
-)
-
-var (
-	logProducer LogProducer
 )
 
 type LogProducer interface {
@@ -82,9 +77,9 @@ func (p *rmqLogProducer) SendLogMessage(ctx context.Context, data []byte) (strin
 type RequestMessageType int
 
 const (
-	RequestMessageType_Unknown RequestMessageType = 0
-	RequestMessageType_In      RequestMessageType = 1
-	RequestMessageType_Out     RequestMessageType = 2
+	RequestMessageTypeUnknown RequestMessageType = 0
+	RequestMessageTypeIn      RequestMessageType = 1
+	RequestMessageTypeOut     RequestMessageType = 2
 )
 
 type LogMessage struct {
@@ -93,12 +88,12 @@ type LogMessage struct {
 
 	RequestBody   string      `json:"request_body"`
 	RequestHeader http.Header `json:"request_header"`
-	RequestTime   time.Time   `json:"request_time"`
+	RequestTime   string      `json:"request_time"`
 
 	ResponseBody      string      `json:"response_body"`
 	ResponseHeader    http.Header `json:"response_header"`
 	ResponseStateCode int         `json:"response_state_code"`
-	ResponseTime      time.Time   `json:"response_time"`
+	ResponseTime      string      `json:"response_time"`
 
 	TimeConsuming int64  `json:"time_consuming"` // milliseconds
 	ErrorMessage  string `json:"error_message"`

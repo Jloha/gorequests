@@ -101,7 +101,11 @@ func (r *Request) doRead() error {
 }
 
 func (r *Request) doProduceLog() error {
-	if logProducer == nil {
+	if r.logProducer == nil {
+		return nil
+	}
+
+	if r.isSend {
 		return nil
 	}
 
@@ -109,31 +113,28 @@ func (r *Request) doProduceLog() error {
 		return err
 	}
 
-	if r.isSend {
-		return nil
-	}
-
 	message := LogMessage{
 		Method:            r.method,
 		Url:               r.cachedurl,
 		RequestBody:       string(r.rawBody),
 		RequestHeader:     r.header,
-		RequestTime:       r.reqTime,
+		RequestTime:       r.reqTime.Format(time.RFC3339),
 		ResponseBody:      string(r.bytes),
 		ResponseHeader:    r.resp.Header,
 		ResponseStateCode: r.resp.StatusCode,
-		ResponseTime:      r.respTime,
+		ResponseTime:      r.respTime.Format(time.RFC3339),
 		TimeConsuming:     r.respTime.UnixMilli() - r.reqTime.UnixMilli(),
 		LogId:             r.getStrCtx(kitutil.LOGIDKEY),
-		RequestType:       RequestMessageType_Out,
+		RequestType:       RequestMessageTypeOut,
 	}
+
 	if r.doErr != nil {
 		message.ErrorMessage = r.doErr.Error()
 	}
 	r.log = &message
 	data, _ := json.Marshal(message)
 
-	msgId, err := logProducer.SendLogMessage(r.context, data)
+	msgId, err := r.logProducer.SendLogMessage(r.context, data)
 	r.isSend = true
 	if err != nil {
 		logs.CtxError(r.context, "[gorequest] SendLogMessage failed, msgId=%s, err: %+v", msgId, err)

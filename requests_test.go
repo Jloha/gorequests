@@ -203,18 +203,8 @@ func newTestHttpServer() {
 func Test_LogProducer(t *testing.T) {
 	as := assert.New(t)
 
-	t.Run("/log_unset", func(t *testing.T) {
-		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithTimeout(time.Second * 10)
-		text, err := r.Text()
-		log := r.LogMessage()
-		as.Nil(err)
-		as.NotEmpty(text)
-		as.Empty(log)
-	})
-
 	t.Run("/log_printer", func(t *testing.T) {
-		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
-		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithTimeout(time.Second * 10)
+		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithLogProducer(gorequests.NewPrinterLogProducer()).WithTimeout(time.Second * 10)
 		text, err := r.Text()
 		log := r.LogMessage()
 		as.Nil(err)
@@ -223,9 +213,8 @@ func Test_LogProducer(t *testing.T) {
 	})
 
 	t.Run("/url", func(t *testing.T) {
-		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
 		url := "https://httpbin.org/get?a=1"
-		r := gorequests.New(http.MethodGet, url).WithTimeout(time.Second * 10)
+		r := gorequests.New(http.MethodGet, url).WithLogProducer(gorequests.NewPrinterLogProducer()).WithTimeout(time.Second * 10)
 		_, err := r.Text()
 		log := r.LogMessage()
 		as.Nil(err)
@@ -233,9 +222,8 @@ func Test_LogProducer(t *testing.T) {
 	})
 
 	t.Run("/body", func(t *testing.T) {
-		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
 		body := `{"A":["1","2"], "B":"999"}`
-		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithBody(body).WithTimeout(time.Second * 10)
+		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithLogProducer(gorequests.NewPrinterLogProducer()).WithBody(body).WithTimeout(time.Second * 10)
 		_, err := r.Text()
 		log := r.LogMessage()
 		as.Nil(err)
@@ -243,12 +231,20 @@ func Test_LogProducer(t *testing.T) {
 	})
 
 	t.Run("/error", func(t *testing.T) {
-		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
-		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithTimeout(time.Second * 10).SetDoError(errors.New("test error"))
+		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithLogProducer(gorequests.NewPrinterLogProducer()).WithTimeout(time.Second * 10).SetDoError(errors.New("test error"))
 		_, err := r.Text()
 		log := r.LogMessage()
 		as.Nil(err)
 		as.NotEmpty(log)
 		as.Equal("test error", log.ErrorMessage)
+	})
+
+	t.Run("/header", func(t *testing.T) {
+		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithLogProducer(gorequests.NewPrinterLogProducer()).WithHeader("a", "1").WithHeader("a", "2").WithTimeout(time.Second * 10)
+		_, err := r.Text()
+		log := r.LogMessage()
+		as.Nil(err)
+		as.Equal("1", log.RequestHeader.Get("a"))
+		as.Equal([]string{"1", "2"}, log.RequestHeader.Values("a"))
 	})
 }

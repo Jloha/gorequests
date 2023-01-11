@@ -38,21 +38,23 @@ type Request struct {
 	isRequest bool
 
 	// log producer
-	isSend   bool
-	log      *LogMessage
-	reqTime  time.Time
-	respTime time.Time
-	doErr    error
+	logProducer LogProducer
+	isSend      bool
+	log         *LogMessage
+	reqTime     time.Time
+	respTime    time.Time
+	doErr       error
 }
 
 func New(method, url string) *Request {
 	r := &Request{
-		url:     url,
-		method:  method,
-		header:  map[string][]string{},
-		querys:  make(map[string][]string),
-		context: context.TODO(),
-		logger:  NewStdoutLogger(),
+		url:         url,
+		method:      method,
+		header:      map[string][]string{},
+		querys:      make(map[string][]string),
+		context:     context.TODO(),
+		logger:      NewStdoutLogger(),
+		logProducer: NewDiscardLogProducer(),
 	}
 	return r
 }
@@ -62,8 +64,8 @@ func (r *Request) SetError(err error) *Request {
 	return r
 }
 
-func SetLogProducer(producer LogProducer) {
-	logProducer = producer
+func (r *Request) SetLogProducer(producer LogProducer) {
+	r.logProducer = producer
 }
 
 func (r *Request) SetDoError(err error) *Request {
