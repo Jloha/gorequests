@@ -17,12 +17,30 @@ type LogProducer interface {
 	SendLogMessage(ctx context.Context, data []byte) error
 }
 
+// ==================
+
+func NewDiscardLogProducer() LogProducer {
+	return newDiscardLogProducer()
+}
+
 func NewPrinterLogProducer() LogProducer {
 	return newPrinterLogProducer()
 }
 
 func NewRmqLogProducer(producer producer.Producer, topic string) LogProducer {
 	return newRmqLogProducer(producer, topic)
+}
+
+// discard log producer
+type discardLogProducer struct {
+}
+
+func newDiscardLogProducer() LogProducer {
+	return &discardLogProducer{}
+}
+
+func (p *discardLogProducer) SendLogMessage(ctx context.Context, data []byte) error {
+	return nil
 }
 
 // printer log producer

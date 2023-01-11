@@ -127,8 +127,8 @@ func (r *Request) doProduceLog() error {
 	if r.doErr != nil {
 		message.ErrorMessage = r.doErr.Error()
 	}
+	r.log = &message
 	data, _ := json.Marshal(message)
-	r.logData = data
 
 	var err error
 	err = logProducer.SendLogMessage(r.context, data)

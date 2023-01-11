@@ -55,9 +55,9 @@ func (r *Request) getStrCtx(key string) string {
 	return ""
 }
 
-// LogData unit test only
-func (r *Request) LogData() []byte {
-	return r.logData
+// LogMessage unit test only
+func (r *Request) LogMessage() *LogMessage {
+	return r.log
 }
 
 // Method request method

@@ -202,36 +202,45 @@ func newTestHttpServer() {
 func Test_LogProducer(t *testing.T) {
 	as := assert.New(t)
 
-	t.Run("", func(t *testing.T) {
+	t.Run("/log_unset", func(t *testing.T) {
 		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithTimeout(time.Second * 10)
 		text, err := r.Text()
 		if err != nil {
 			panic(err)
 		}
-		logData := r.LogData()
-		fmt.Println("text: ", text)
-		fmt.Printf("log data: %v\n", string(logData))
+		log := r.LogMessage()
 		as.Nil(err)
 		as.NotEmpty(text)
-		as.Empty(logData)
+		as.Empty(log)
 	})
 
-	t.Run("", func(t *testing.T) {
+	t.Run("/log_printer", func(t *testing.T) {
 		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
 		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithTimeout(time.Second * 10)
 		text, err := r.Text()
 		if err != nil {
 			panic(err)
 		}
-		logData := r.LogData()
-		fmt.Println("text: ", text)
-		fmt.Printf("log data: %v\n", string(logData))
+		log := r.LogMessage()
 		as.Nil(err)
 		as.NotEmpty(text)
-		as.NotEmpty(logData)
+		as.NotEmpty(log)
 	})
 
-	t.Run("", func(t *testing.T) {
+	t.Run("/url", func(t *testing.T) {
+		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
+		url := "https://httpbin.org/get?a=1"
+		r := gorequests.New(http.MethodGet, url).WithTimeout(time.Second * 10)
+		_, err := r.Text()
+		if err != nil {
+			panic(err)
+		}
+		log := r.LogMessage()
+		as.Nil(err)
+		as.Equal(url, log.Url)
+	})
+
+	t.Run("/body", func(t *testing.T) {
 		gorequests.SetLogProducer(gorequests.NewPrinterLogProducer())
 		body := `{"A":["1","2"], "B":"999"}`
 		r := gorequests.New(http.MethodGet, "https://httpbin.org/get").WithBody(body).WithTimeout(time.Second * 10)
@@ -239,9 +248,8 @@ func Test_LogProducer(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		logData := r.LogData()
-		fmt.Printf("log data: %v\n", string(logData))
+		log := r.LogMessage()
 		as.Nil(err)
-		as.Equal(body, "{\"A\":[\"1\",\"2\"], \"B\":\"999\"}")
+		as.Equal(body, log.RequestBody)
 	})
 }
