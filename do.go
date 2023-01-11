@@ -1,6 +1,7 @@
 package gorequests
 
 import (
+	"code.byted.org/gopkg/logs"
 	"code.byted.org/kite/kitutil"
 	"crypto/tls"
 	"encoding/json"
@@ -130,12 +131,13 @@ func (r *Request) doProduceLog() error {
 	r.log = &message
 	data, _ := json.Marshal(message)
 
-	var err error
-	err = logProducer.SendLogMessage(r.context, data)
+	msgId, err := logProducer.SendLogMessage(r.context, data)
 	r.isSend = true
 	if err != nil {
+		logs.CtxError(r.context, "[gorequest] SendLogMessage failed, msgId=%s, err: %+v", msgId, err)
 		return fmt.Errorf("[gorequest] %s %s send log message failed %w, message: %s", r.method, r.cachedurl, err, string(data))
 	}
+	logs.CtxInfo(r.context, "[gorequests] SendLogMessage succeeded, msgId=%s", msgId)
 
 	r.logger.Info(r.Context(), "[gorequests] %s: %s, produce log: %s", r.method, r.cachedurl, string(data))
 	return nil
