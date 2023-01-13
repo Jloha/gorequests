@@ -123,11 +123,10 @@ func (r *Request) doProduceLog() error {
 		ResponseHeader:    r.resp.Header,
 		ResponseStateCode: r.resp.StatusCode,
 		ResponseTime:      r.respTime.Format(time.RFC3339),
-		TimeConsuming:     r.respTime.UnixMilli() - r.reqTime.UnixMilli(),
+		TimeConsuming:     (r.respTime.UnixNano() - r.reqTime.UnixNano()) / 1000000,
 		LogId:             r.getStrCtx(kitutil.LOGIDKEY),
 		RequestType:       RequestMessageTypeOut,
 	}
-
 	if r.doErr != nil {
 		message.ErrorMessage = r.doErr.Error()
 	}
