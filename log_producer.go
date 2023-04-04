@@ -7,7 +7,7 @@ import (
 )
 
 type LogProducer interface {
-	SendLogMessage(ctx context.Context, data []byte) (string, error)
+	SendLogMessage(ctx context.Context, data []byte) error
 }
 
 // ==================
@@ -32,8 +32,8 @@ func newDiscardLogProducer() LogProducer {
 	return &discardLogProducer{}
 }
 
-func (p *discardLogProducer) SendLogMessage(ctx context.Context, data []byte) (string, error) {
-	return "", nil
+func (p *discardLogProducer) SendLogMessage(ctx context.Context, data []byte) error {
+	return nil
 }
 
 // printer log producer
@@ -44,29 +44,29 @@ func newPrinterLogProducer() LogProducer {
 	return &printerLogProducer{}
 }
 
-func (p *printerLogProducer) SendLogMessage(ctx context.Context, data []byte) (string, error) {
+func (p *printerLogProducer) SendLogMessage(ctx context.Context, data []byte) error {
 	fmt.Printf("[PrinterLogProducer] send log message: %s\n", string(data))
-	return "", nil
+	return nil
 }
 
 type Producer interface {
-	Send(ctx context.Context, data []byte) (string, error)
+	Send(ctx context.Context, data []byte) error
 }
 
-// rocket mq log producer
-type rmqLogProducer struct {
+// mq log producer
+type logProducer struct {
 	producer Producer
 	topic    string
 }
 
 func newRmqLogProducer(producer Producer, topic string) LogProducer {
-	return &rmqLogProducer{
+	return &logProducer{
 		producer: producer,
 		topic:    topic,
 	}
 }
 
-func (p *rmqLogProducer) SendLogMessage(ctx context.Context, data []byte) (string, error) {
+func (p *logProducer) SendLogMessage(ctx context.Context, data []byte) error {
 	return p.producer.Send(ctx, data)
 }
 

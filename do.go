@@ -131,13 +131,13 @@ func (r *Request) doProduceLog() error {
 	r.log = &message
 	data, _ := json.Marshal(message)
 
-	msgId, err := r.logProducer.SendLogMessage(r.context, data)
+	err := r.logProducer.SendLogMessage(r.context, data)
 	r.isSend = true
 	if err != nil {
-		r.logger.Error(r.context, "[gorequest] SendLogMessage failed, msgId=%s, err: %+v", msgId, err)
+		r.logger.Error(r.context, "[gorequest] SendLogMessage failed, err: %+v", err)
 		return fmt.Errorf("[gorequest] %s %s send log message failed %w, message: %s", r.method, r.cachedurl, err, string(data))
 	}
-	r.logger.Info(r.context, "[gorequests] SendLogMessage succeeded, msgId=%s", msgId)
+	r.logger.Info(r.context, "[gorequests] SendLogMessage succeeded")
 
 	r.logger.Info(r.Context(), "[gorequests] %s: %s, produce log: %s", r.method, r.cachedurl, string(data))
 	return nil
