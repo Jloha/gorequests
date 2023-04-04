@@ -255,6 +255,12 @@ func (r *Request) WithLogProducer(producer LogProducer) *Request {
 	})
 }
 
+func (r *Request) WithLogId(logId string) *Request {
+	return r.configParamFactor(func(r *Request) {
+		r.logId = logId
+	})
+}
+
 // WithLogger set logger
 func (r *Request) WithLogger(logger Logger) *Request {
 	return r.configParamFactor(func(r *Request) {

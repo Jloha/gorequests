@@ -1,8 +1,6 @@
 package gorequests
 
 import (
-	"code.byted.org/rocketmq/rocketmq-go-proxy/pkg/producer"
-	"code.byted.org/rocketmq/rocketmq-go-proxy/pkg/types"
 	"context"
 	"fmt"
 	"net/http"
@@ -22,7 +20,7 @@ func NewPrinterLogProducer() LogProducer {
 	return newPrinterLogProducer()
 }
 
-func NewRmqLogProducer(producer producer.Producer, topic string) LogProducer {
+func NewRmqLogProducer(producer Producer, topic string) LogProducer {
 	return newRmqLogProducer(producer, topic)
 }
 
@@ -51,13 +49,17 @@ func (p *printerLogProducer) SendLogMessage(ctx context.Context, data []byte) (s
 	return "", nil
 }
 
+type Producer interface {
+	Send(ctx context.Context, data []byte) (string, error)
+}
+
 // rocket mq log producer
 type rmqLogProducer struct {
-	producer producer.Producer
+	producer Producer
 	topic    string
 }
 
-func newRmqLogProducer(producer producer.Producer, topic string) LogProducer {
+func newRmqLogProducer(producer Producer, topic string) LogProducer {
 	return &rmqLogProducer{
 		producer: producer,
 		topic:    topic,
@@ -65,13 +67,7 @@ func newRmqLogProducer(producer producer.Producer, topic string) LogProducer {
 }
 
 func (p *rmqLogProducer) SendLogMessage(ctx context.Context, data []byte) (string, error) {
-	msg := types.NewMessage(p.topic, data)
-	var msgId string
-	result, err := p.producer.Send(ctx, msg)
-	if result != nil {
-		msgId = result.MsgId
-	}
-	return msgId, err
+	return p.producer.Send(ctx, data)
 }
 
 type RequestMessageType int

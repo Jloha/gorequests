@@ -44,6 +44,7 @@ type Request struct {
 	reqTime     time.Time
 	respTime    time.Time
 	doErr       error
+	logId       string
 }
 
 func New(method, url string) *Request {

@@ -1,8 +1,6 @@
 package gorequests
 
 import (
-	"code.byted.org/gopkg/logs"
-	"code.byted.org/kite/kitutil"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -124,7 +122,7 @@ func (r *Request) doProduceLog() error {
 		ResponseStateCode: r.resp.StatusCode,
 		ResponseTime:      r.respTime.Format(time.RFC3339),
 		TimeConsuming:     (r.respTime.UnixNano() - r.reqTime.UnixNano()) / 1000000,
-		LogId:             r.getStrCtx(kitutil.LOGIDKEY),
+		LogId:             r.logId,
 		RequestType:       RequestMessageTypeOut,
 	}
 	if r.doErr != nil {
@@ -136,10 +134,10 @@ func (r *Request) doProduceLog() error {
 	msgId, err := r.logProducer.SendLogMessage(r.context, data)
 	r.isSend = true
 	if err != nil {
-		logs.CtxError(r.context, "[gorequest] SendLogMessage failed, msgId=%s, err: %+v", msgId, err)
+		r.logger.Error(r.context, "[gorequest] SendLogMessage failed, msgId=%s, err: %+v", msgId, err)
 		return fmt.Errorf("[gorequest] %s %s send log message failed %w, message: %s", r.method, r.cachedurl, err, string(data))
 	}
-	logs.CtxInfo(r.context, "[gorequests] SendLogMessage succeeded, msgId=%s", msgId)
+	r.logger.Info(r.context, "[gorequests] SendLogMessage succeeded, msgId=%s", msgId)
 
 	r.logger.Info(r.Context(), "[gorequests] %s: %s, produce log: %s", r.method, r.cachedurl, string(data))
 	return nil
